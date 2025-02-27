@@ -148,4 +148,5 @@ public class Figure extends JPanel {
         frame.setVisible(true);
     }
 
+
 }
