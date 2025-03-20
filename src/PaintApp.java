@@ -1,4 +1,5 @@
 
+import Commands.HistoryManager;
 import Files.UserFile;
 import Shapes.Polygon;
 import Shapes.Rectangle;
@@ -88,7 +89,15 @@ public class PaintApp {
         });
 
         JButton undoButton = new JButton("Undo");
+        undoButton.addActionListener(e -> {
+            canvas.undo();
+           // updateButtonStates();
+        });
         JButton redoButton = new JButton("Redo");
+        redoButton.addActionListener(e -> {
+            canvas.redo();
+           // updateButtonStates();
+        });
 
         undoButton.setBackground(Color.orange);
         redoButton.setBackground(Color.orange);
@@ -114,7 +123,16 @@ public class PaintApp {
         frame.add(new DrawingPanel(), BorderLayout.CENTER);
 
         frame.setVisible(true);
+
     }
+
+    /*
+    private void updateButtonStates() {
+        undoButton.setEnabled(canvas.canUndo());
+        redoButton.setEnabled(canvas.canRedo());
+    }
+
+     */
 
     private JButton createToolButton(String text, Tool tool) {
         JButton button = new JButton(text);

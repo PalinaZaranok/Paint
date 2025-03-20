@@ -3,10 +3,11 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serializable;
 
 public class Line extends Shape {
     private Point endPoint;
-
+    private static final long serialVersionUID = 1L;
     public Line(PaintSettings paintSettings, Point position, Point endPoint){
         super(paintSettings, position);
         this.endPoint = endPoint;

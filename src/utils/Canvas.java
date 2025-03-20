@@ -1,5 +1,8 @@
 package utils;
 
+import Commands.ColorCommand;
+import Commands.HistoryManager;
+import Commands.ShapeCommand;
 import Shapes.Shape;
 
 import java.awt.*;
@@ -9,6 +12,7 @@ import java.util.List;
 
 public class Canvas {
     public List<Shape> shapes = new ArrayList<>();
+    private final HistoryManager historyManager = new HistoryManager();
     private Tool currentTool;
     protected Shape currentShape;
 
@@ -18,6 +22,11 @@ public class Canvas {
 
     public void addShape(Shape shape) {
         shapes.add(shape);
+        historyManager.executeCommand(new ShapeCommand(this, shape));
+    }
+
+    public void removeShape(Shape shape){
+        shapes.remove(shape);
     }
 
     public void clear(){
@@ -51,5 +60,19 @@ public class Canvas {
             shapes.add(currentShape);
             currentShape = null;
         }
+    }
+
+    public void changeShapeColor(Shape shape, Color newColor) {
+        historyManager.executeCommand(new ColorCommand(shape, newColor));
+    }
+
+    public void undo() {
+        historyManager.undo();
+        //repaint();
+    }
+
+    public void redo() {
+        historyManager.redo();
+       // repaint();
     }
 }

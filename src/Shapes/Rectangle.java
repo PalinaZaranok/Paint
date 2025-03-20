@@ -3,11 +3,13 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serializable;
 
 public class Rectangle extends Shape {
     protected Point pointRight;
     private int width;
     private int height;
+    private static final long serialVersionUID = 1L;
     public Rectangle(PaintSettings paintSettings, Point position, int width, int height){
         super(paintSettings, position);
         this.height = height;

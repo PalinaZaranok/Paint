@@ -5,11 +5,13 @@ import utils.PaintSettings;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 
 public class Polygon extends Shape {
     private List<Point> points;
     private Point tempPoint;
+    private static final long serialVersionUID = 1L;
     public Polygon(PaintSettings paintSettings, Point startPoint, List<Point> points){
         super(paintSettings, startPoint);
         this.points = new ArrayList<>();

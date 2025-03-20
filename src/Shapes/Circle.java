@@ -3,9 +3,11 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serializable;
 
 public class Circle extends Shape {
     private double radius;
+    private static final long serialVersionUID = 1L;
     public Circle(PaintSettings paintSettings, Point position, double radius){
         super(paintSettings, position);
         this.radius = radius;
