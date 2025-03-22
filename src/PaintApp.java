@@ -4,6 +4,7 @@ import Files.UserFile;
 import Shapes.Polygon;
 import Shapes.Rectangle;
 import Shapes.*;
+import Shapes.Shape;
 import utils.Canvas;
 import utils.DrawTool;
 import utils.PaintSettings;
@@ -160,13 +161,45 @@ public class PaintApp {
 
 
     class DrawingPanel extends JPanel {
+        private Shape selectedShape;
+        private Point selectedHandle;
+        private Point dragStart;
+
         public DrawingPanel() {
+            setDoubleBuffered(true);
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
-                        canvas.handleMousePress(e);
-                        repaint();
+                        if (selectedShape != null) {
+                            selectedShape.setSelected(false);
+                        }
+                        for (int i = canvas.shapes.size()-1; i >= 0; i--) {
+                            Shape shape = canvas.shapes.get(i);
+                            if (shape.isHit(e.getPoint())) {
+                                selectedShape = shape;
+                                selectedShape.setSelected(true);
+                                dragStart = e.getPoint();
+                                selectedHandle = null;
+
+                                // Проверка на попадание в маркеры
+                                for (Point handle : selectedShape.getHandles()) {
+                                    if (Math.abs(handle.x - e.getX()) < 5
+                                            && Math.abs(handle.y - e.getY()) < 5) {
+                                        selectedHandle = handle;
+                                        break;
+                                    }
+                                }
+                                repaint();
+                                return;
+                            }
+                        }
+                        // Если не выбрана линия - обрабатываем новое рисование
+                        if (selectedShape == null) {
+                            canvas.handleMousePress(e);
+                        }
+
+                        repaint();  // Единый вызов перерисовки
                     }
                 }
 
@@ -176,6 +209,9 @@ public class PaintApp {
                         canvas.handleMouseRelease(e);
                         repaint();
                     }
+                    selectedShape = null;
+                    selectedHandle = null;
+                    dragStart = null;
                 }
             });
 
@@ -183,12 +219,35 @@ public class PaintApp {
                 @Override
                 public void mouseDragged(MouseEvent e) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
-                        canvas.handleMouseDrag(e);
+                        // Если линия выбрана - обрабатываем только её перемещение
+                        if (selectedShape != null && dragStart != null) {
+                            Point delta = new Point(
+                                    e.getX() - dragStart.x,
+                                    e.getY() - dragStart.y
+                            );
+
+                            if (selectedHandle != null) {
+                                selectedShape.resize(selectedHandle, e.getPoint());
+                            } else {
+                                selectedShape.move(delta);
+                            }
+                            dragStart = e.getPoint();
+                            repaint();
+                        }
+                        else {
+                            canvas.handleMouseDrag(e);
+                        }
                         repaint();
                     }
                 }
+
             });
 
+        }
+
+        private boolean isNear(Point a, Point b) {
+            return Math.abs(a.x - b.x) < 5 &&
+                    Math.abs(a.y - b.y) < 5;
         }
 
         @Override

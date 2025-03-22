@@ -40,17 +40,15 @@ public class BrokenLine extends Shape {
             Point last = points.get(points.size() - 1);
             g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
         }
+
+        if(selected) drawHandles(g);
     }
 
     @Override
-    public void resize(double scale) {
-        Point center = calculateCenter();
-
-        for (Point p : points) {
-            int dx = p.x - center.x;
-            int dy = p.y - center.y;
-            p.x = center.x + (int) Math.round(dx * scale);
-            p.y = center.y + (int) Math.round(dy * scale);
+    public void resize(Point handle, Point newPosition) {
+        int index = points.indexOf(handle);
+        if (index >= 0) {
+            points.set(index, newPosition);
         }
     }
 
@@ -67,6 +65,46 @@ public class BrokenLine extends Shape {
         position = newPosition;
     }
 
+    @Override
+    public List<Point> getHandles() {
+        return new ArrayList<>(points);
+    }
+
+    private boolean isNearEdge(Point point) {
+        for (int i = 0; i < points.size(); i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get((i+1) % points.size());
+            if (distanceToSegment(p1, p2, point) <= 5) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private double distanceToSegment(Point a, Point b, Point p) {
+        double lengthSq = a.distanceSq(b);
+        if (lengthSq == 0) return a.distance(p);
+
+        double t = ((p.x - a.x)*(b.x - a.x) + (p.y - a.y)*(b.y - a.y)) / lengthSq;
+        t = Math.max(0, Math.min(1, t));
+
+        Point projection = new Point(
+                (int)(a.x + t*(b.x - a.x)),
+                (int)(a.y + t*(b.y - a.y))
+        );
+        return p.distance(projection);
+    }
+
+    @Override
+    public boolean isHit(Point point) {
+        java.awt.Polygon poly = new java.awt.Polygon(
+                points.stream().mapToInt(p -> p.x).toArray(),
+                points.stream().mapToInt(p -> p.y).toArray(),
+                points.size()
+        );
+        return poly.contains(point) || isNearEdge(point);
+    }
+
     private Point calculateCenter() {
         if (points.isEmpty()) return new Point(0, 0);
 
@@ -81,14 +119,6 @@ public class BrokenLine extends Shape {
 
     public List<Point> getPoints(){
         return new ArrayList<>(points);
-    }
-
-    // Метод для завершения построения многоугольника
-    public void close() {
-        if (points.size() > 2) {
-            // Удаляем временную точку и замыкаем контур
-            tempPoint = null;
-        }
     }
 
     public List<Point> getVertices() {
