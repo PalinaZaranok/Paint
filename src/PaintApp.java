@@ -35,7 +35,7 @@ public class PaintApp {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200,700);
 
-        settings = new PaintSettings(Color.BLACK, 2);
+        settings = new PaintSettings(Color.BLACK, Color.WHITE, 2);
         canvas = new Canvas();
 
         JMenuBar menuBar = new JMenuBar();
@@ -52,20 +52,7 @@ public class PaintApp {
         JToolBar toolBar = new JToolBar();
 
         List<Point> points = new ArrayList<>();
-
-        // Добавление точек в список
-        points.add(new Point(100, 100)); // Точка 1
-        points.add(new Point(150, 200)); // Точка 2
-        points.add(new Point(200, 50)); // Точка 3
-        points.add(new Point(250, 150)); // Точка 4
-
         List<Point> polygonPoints = new ArrayList<>();
-
-        // Добавление точек в список
-        polygonPoints.add(new Point(100, 100)); // Точка 1
-        polygonPoints.add(new Point(0, 200)); // Точка 2
-        polygonPoints.add(new Point(200, 200)); // Точка 3
-        polygonPoints.add(new Point(200, 100)); // Точка 4
 
         JButton lineButton = createToolButton("Line", new DrawTool(new Line(settings, new Point(100,200), new Point(20, 30)),settings));
         JButton rectButton = createToolButton("Rectangle", new DrawTool(new Rectangle(settings, new Point(100,200), 80, 60),settings));
