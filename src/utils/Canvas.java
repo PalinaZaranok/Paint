@@ -3,6 +3,7 @@ package utils;
 import Commands.ColorCommand;
 import Commands.HistoryManager;
 import Commands.ShapeCommand;
+import Shapes.Polygon;
 import Shapes.Shape;
 
 import java.awt.*;
@@ -14,7 +15,7 @@ public class Canvas {
     public List<Shape> shapes = new ArrayList<>();
     private final HistoryManager historyManager = new HistoryManager();
     private Tool currentTool;
-    protected Shape currentShape;
+    public Shape currentShape;
 
     public void setTool(Tool tool) {
         this.currentTool = tool;
@@ -43,7 +44,7 @@ public class Canvas {
     }
 
     public void handleMousePress(MouseEvent event) {
-        if (currentTool != null && currentShape == null) {
+        if (currentTool != null) {
             currentTool.handleMousePress(this, event);
         }
     }

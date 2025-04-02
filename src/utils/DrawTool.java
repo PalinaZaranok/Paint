@@ -77,7 +77,11 @@ public class DrawTool implements Tool {
 
     @Override
     public void handleMouseRelease(Canvas canvas, MouseEvent e) {
-
+        if (canvas.currentShape != null){
+            if(canvas.currentShape instanceof Polygon){
+                ((Polygon)canvas.currentShape).addVertex(e.getPoint());
+            }
+        }
     }
 
 }

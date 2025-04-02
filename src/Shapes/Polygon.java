@@ -10,49 +10,48 @@ import java.io.Serializable;
 public class Polygon extends Shape {
     private List<Point> points;
     private Point tempPoint;
+    public boolean isClosed = false;
     private static final long serialVersionUID = 1L;
     public Polygon(PaintSettings paintSettings, Point startPoint, List<Point> points){
         super(paintSettings, startPoint);
         this.points = new ArrayList<>();
         this.points.add(startPoint);
+        if (points != null) {
+            this.points.addAll(points);
+        }
     }
 
     @Override
     public void draw(Graphics2D g){
-        int []xPoints = new int[points.size()];
-        int[] yPoints = new int[points.size()];
+        if (points.size() < 2) return;
 
-        g.setColor(paintSettings.getColor());
+        g.setColor(Color.black);
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
 
+        // Рисуем все отрезки
         for (int i = 0; i < points.size() - 1; i++) {
             Point p1 = points.get(i);
-            xPoints[i] = points.get(i).x;
-            yPoints[i] = points.get(i).y;
             Point p2 = points.get(i + 1);
             g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
 
-        if (tempPoint != null && !points.isEmpty()) {
-            Point last = points.get(points.size() - 1);
-            g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
+        // Явное соединение первой и последней точки
+        if (isClosed) {
+            Point first = points.getFirst();
+            Point last = points.getLast();
+            g.drawLine(last.x, last.y, first.x, first.y);
         }
-
-        if(paintSettings.getFillColor() != null) {
-            g.setColor(paintSettings.getFillColor());
-            g.fillPolygon(xPoints, yPoints, points.size());
-        }
-
-        if(selected) drawHandles(g);
     }
 
     @Override
     public boolean isHit(Point point) {
-        // Создаем объект java.awt.Polygon для точной проверки
-        int[] xPoints = points.stream().mapToInt(p -> p.x).toArray();
-        int[] yPoints = points.stream().mapToInt(p -> p.y).toArray();
-        java.awt.Polygon awtPolygon = new java.awt.Polygon(xPoints, yPoints, points.size());
-
+        // stream создает поток из коллекции
+        // mapToInt(p -> p.x) преобразует точку в ее координату и возвращет поток IntStream
+        java.awt.Polygon awtPolygon = new java.awt.Polygon(
+            points.stream().mapToInt(p->p.x).toArray(),
+            points.stream().mapToInt(p->p.y).toArray(),
+            points.size()
+        );
         // Проверяем попадание в сам полигон или близко к ребрам
         return awtPolygon.contains(point) || isNearEdge(point);
     }
@@ -102,22 +101,37 @@ public class Polygon extends Shape {
     @Override
     public void resize(Point handle, Point newPosition) {
         int index = points.indexOf(handle);
-        if (index >= 0) {
+        if (index != -1) {
             points.set(index, newPosition);
         }
     }
     public void addVertex(Point point) {
-        points.add(point);
+        if (!isClosed) {
+            points.add(point);
+        }
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty() && !isClosed) {
+            points.set(points.size() - 1, point);
+        }
     }
 
     public void updateTempPoint(Point point) {
-        this.tempPoint = point;
+        if(!isClosed){
+            this.tempPoint = point;
+        }
     }
 
     public void close() {
-        if (points.size() > 2) {
-            points.add(new Point(points.get(0)));
+        System.out.println("Closing polygon. Points: " + points.size());
+        if (points.size() >= 2) {
+            isClosed = true;
         }
+    }
+
+    public List<Point> getVertices() {
+        return points;
     }
 
 }
