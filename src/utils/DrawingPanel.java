@@ -51,12 +51,12 @@ public class DrawingPanel extends JPanel {
                     if(e.isControlDown()){
                         if (ctrlPressed){
                             if (currentPolygon == null) {
-                                currentPolygon = new Polygon(new PaintSettings(Color.BLACK, null, 2), e.getPoint(), new ArrayList<>());
+                                currentPolygon = new Polygon(new PaintSettings(null, null, 2), e.getPoint(), new ArrayList<>());
                                 currentPolygon.addVertex(e.getPoint());
                             }
+                            repaint();
+                            return;
                         }
-                        repaint();
-                        return;
                     }
                     if (selectedShape != null) {
                         selectedShape.setSelected(false);
@@ -98,11 +98,12 @@ public class DrawingPanel extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    if(ctrlPressed && currentPolygon != null){
+                    if (ctrlPressed && currentPolygon != null) {
                         currentPolygon.addVertex(e.getPoint());
-                        repaint();
+                    } else if (canvas.currentShape != null) {
+                        canvas.shapes.add(canvas.currentShape);
+                        canvas.currentShape = null;
                     }
-                    canvas.handleMouseRelease(e);
                     repaint();
                 }
                 selectedShape = null;
@@ -115,10 +116,14 @@ public class DrawingPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    if(ctrlPressed && currentPolygon != null){
-                        currentPolygon.updateLastPoint(e.getPoint());
-                        repaint();
+                    if (ctrlPressed && currentPolygon != null) {
+                        // Обновление временной линии для многоугольника
+                        currentPolygon.updateTempPoint(e.getPoint());
+                    } else if (canvas.currentShape != null) {
+                        // Обновление параметров текущей фигуры
+                        canvas.handleMouseDrag(e);
                     }
+                    repaint();
                     // Если линия выбрана - обрабатываем только её перемещение
                     if (selectedShape != null && dragStart != null) {
                         Point delta = new Point(
@@ -156,6 +161,16 @@ public class DrawingPanel extends JPanel {
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, getWidth(), getHeight());
         canvas.paintComponent(g2d);
+
+        // Отрисовываем текущую фигуру (предпросмотр)
+        if (canvas.currentShape != null) {
+            canvas.currentShape.draw(g2d);
+        }
+
+        // Отрисовываем временную линию для многоугольника
+        if (currentPolygon != null) {
+            currentPolygon.draw(g2d);
+        }
     }
 }
 

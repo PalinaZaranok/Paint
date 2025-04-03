@@ -23,23 +23,26 @@ public class Polygon extends Shape {
 
     @Override
     public void draw(Graphics2D g){
-        if (points.size() < 2) return;
+        if (points.isEmpty()) return;
 
-        g.setColor(Color.black);
+        g.setColor(paintSettings.getColor());
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
 
-        // Рисуем все отрезки
         for (int i = 0; i < points.size() - 1; i++) {
             Point p1 = points.get(i);
             Point p2 = points.get(i + 1);
             g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
 
-        // Явное соединение первой и последней точки
+        if (tempPoint != null && !isClosed) {
+            Point last = points.getLast();
+            g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
+        }
+
         if (isClosed) {
             Point first = points.getFirst();
             Point last = points.getLast();
-            g.drawLine(last.x, last.y, first.x, first.y);
+            g.drawLine(first.x, first.y, last.x, last.y);
         }
     }
 
@@ -118,9 +121,7 @@ public class Polygon extends Shape {
     }
 
     public void updateTempPoint(Point point) {
-        if(!isClosed){
-            this.tempPoint = point;
-        }
+        this.tempPoint = point;
     }
 
     public void close() {
