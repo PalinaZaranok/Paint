@@ -3,11 +3,13 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
 public class Circle extends Shape{
     private int radius;
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final int MIN_RADIUS = 5;
     public Circle(PaintSettings paintSettings, Point position, int radius){
@@ -16,19 +18,18 @@ public class Circle extends Shape{
     }
 
     @Override
-    public void draw(Graphics2D g){
-        if(paintSettings.getFillColor() != null) {
+    public void draw(Graphics2D g) {
+        int diameter = radius * 2;
+
+        if (paintSettings.getFillColor() != null) {
             g.setColor(paintSettings.getFillColor());
-            g.fillOval(position.x, position.y, radius, radius);
+            g.fillOval(position.x, position.y, diameter, diameter);
         }
 
         g.setColor(paintSettings.getColor());
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
-        int diameter = radius * 2;
         g.drawOval(position.x, position.y, diameter, diameter);
-        if (selected){
-            drawHandles(g);
-        }
+
     }
     @Override
     public List<Point> getHandles() {

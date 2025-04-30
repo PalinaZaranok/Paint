@@ -8,69 +8,56 @@ import Shapes.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class DrawTool implements Tool {
     private Shape prototype;
     private PaintSettings settings;
+    private Map<Class<?>, BiConsumer<Shape, Point>> updateActions = new HashMap<>();
+    private Map<Class<?>, Function<Point, Shape>> createActions = new HashMap<>();
 
     public DrawTool(Shape prototype, PaintSettings settings) {
         this.settings = settings;
         this.prototype = prototype;
+        initActions();
     }
+    private void initActions(){
+        createActions.put(Line.class, p -> new Line(settings, p, p));
+        createActions.put(Rectangle.class, p -> new Rectangle(settings, p,0, 0));
+        createActions.put(Circle.class, p -> new Circle(settings, p, 0));
+        createActions.put(BrokenLine.class, p -> new BrokenLine(settings, p, new ArrayList<>()));
+        createActions.put(Polygon.class, p -> new Polygon(settings, p, new ArrayList<>()));
 
+        updateActions.put(Line.class, (s, p) -> ((Line) s).setEnd(p));
+        updateActions.put(Rectangle.class, (s,p) -> {
+            int width = p.x - s.getPosition().x;
+            int height = p.y - s.getPosition().y;
+            ((Rectangle) s).setSize(width, height);
+        } );
+        updateActions.put(Circle.class, (s,p) ->{
+            int radius = (int) Math.hypot(p.x - s.getPosition().x, p.y - s.getPosition().y);
+            ((Circle) s).setRadius(radius);
+        });
+        updateActions.put(Polygon.class, (s,p) -> ((Polygon) s).updateTempPoint(p));
+        updateActions.put(BrokenLine.class, (s,p) -> ((BrokenLine) s).updatePoint(p));
+    }
     @Override
     public void handleMousePress(Canvas canvas, MouseEvent event) {
-        Point point = event.getPoint();
-
-        List<Point> points = new ArrayList<>();
-        List<Point> polygonPoints = new ArrayList<>();
-
-        switch (prototype.getClass().getSimpleName()){
-            case "Line":
-                canvas.currentShape = new Line(settings, point, point);
-                break;
-            case "Rectangle":
-                canvas.currentShape = new Rectangle(settings, point,0,0);
-                break;
-            case "Circle":
-                canvas.currentShape = new Circle(settings, point, 0);
-                break;
-            case "Polygon":
-                canvas.currentShape = new Polygon(settings, point, polygonPoints);
-                break;
-            case "BrokenLine":
-                canvas.currentShape = new BrokenLine(settings, point, points);
-                break;
+        Function<Point, Shape> creator = createActions.get(prototype.getClass());
+        if(creator != null) {
+            canvas.currentShape = creator.apply(event.getPoint());
         }
     }
 
     @Override
     public void handleMouseDrag(Canvas canvas, MouseEvent event) {
-        Point current = event.getPoint();
-        if (canvas.currentShape == null) return;
-        switch (canvas.currentShape.getClass().getSimpleName()) {
-            case "Line":
-                ((Line) canvas.currentShape).setEnd(current);
-                break;
-            case "Rectangle":
-                int width = current.x - canvas.currentShape.getPosition().x;
-                int height = current.y - canvas.currentShape.getPosition().y;
-                ((Rectangle) canvas.currentShape).setSize(width, height);
-                break;
-            case "Circle":
-                int radius = (int) Math.hypot(
-                        current.x - canvas.currentShape.getPosition().x,
-                        current.y - canvas.currentShape.getPosition().y
-                );
-                ((Circle) canvas.currentShape).setRadius(radius);
-                break;
-            case "Polygon":
-                ((Polygon)canvas.currentShape).updateTempPoint(current);
-                break;
-            case "BrokenLine":
-                ((BrokenLine)canvas.currentShape).updatePoint(current);
-                break;
+        BiConsumer<Shape, Point> updater = updateActions.get(canvas.currentShape.getClass());
+        if (updater != null){
+            updater.accept(canvas.currentShape, event.getPoint());
         }
     }
 

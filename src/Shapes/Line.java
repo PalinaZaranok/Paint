@@ -3,12 +3,14 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 public class Line extends Shape implements Serializable {
     private Point endPoint;
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final int HIT_TOLERANCE = 5;
     public Line(PaintSettings paintSettings, Point position, Point endPoint){
@@ -21,9 +23,7 @@ public class Line extends Shape implements Serializable {
         g.setColor(paintSettings.getColor());
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
         g.drawLine(position.x, position.y, endPoint.x, endPoint.y);
-        if (selected) {
-            drawHandles(g);
-        }
+
     }
 
     @Override

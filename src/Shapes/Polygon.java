@@ -3,6 +3,7 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -11,6 +12,7 @@ public class Polygon extends Shape {
     private List<Point> points;
     private Point tempPoint;
     public boolean isClosed = false;
+    @Serial
     private static final long serialVersionUID = 1L;
     public Polygon(PaintSettings paintSettings, Point startPoint, List<Point> points){
         super(paintSettings, startPoint);
@@ -21,10 +23,14 @@ public class Polygon extends Shape {
         }
     }
 
+    /*
+
     @Override
     public void draw(Graphics2D g){
+        int [] xPoints = new int[points.size()];
+        int [] yPoints = new int [points.size()];
         if (points.isEmpty()) return;
-
+        //устанавливает цвет контура и толщину линии многоугольника
         g.setColor(paintSettings.getColor());
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
 
@@ -39,10 +45,61 @@ public class Polygon extends Shape {
             g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
         }
 
+        for (int i = 0; i < points.size(); i++) {
+            xPoints[i] = points.get(i).x;
+            yPoints[i] = points.get(i).y;
+        }
+        //отрисовка последней линии
         if (isClosed) {
             Point first = points.getFirst();
             Point last = points.getLast();
             g.drawLine(first.x, first.y, last.x, last.y);
+            if(paintSettings.getFillColor() != null){
+                g.setColor(paintSettings.getFillColor());
+                g.fillPolygon(xPoints, yPoints, points.size());
+            }
+        }
+
+        //заливка фигуры
+    }
+     */
+
+    @Override
+    public void draw(Graphics2D g) {
+
+        // Конвертируем точки в массивы координат
+        int[] xPoints = points.stream().mapToInt(p -> p.x).toArray();
+        int[] yPoints = points.stream().mapToInt(p -> p.y).toArray();
+
+        // 1. Отрисовка контура (всегда)
+        g.setColor(paintSettings.getColor());
+        g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
+
+        // Рисуем линии между точками
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+
+        // Временная линия (если полигон не замкнут)
+        if (tempPoint != null && !isClosed) {
+            Point last = points.get(points.size() - 1);
+            g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
+        }
+
+        // 2. Заливка и замыкающая линия (только после закрытия)
+        if (isClosed) {
+            // Замыкаем фигуру
+            Point first = points.get(0);
+            Point last = points.get(points.size() - 1);
+            g.drawLine(first.x, first.y, last.x, last.y);
+
+            // Заливаем, если задан цвет
+            if (paintSettings.getFillColor() != null) {
+                g.setColor(paintSettings.getFillColor());
+                g.fillPolygon(xPoints, yPoints, points.size());
+            }
         }
     }
 
@@ -125,9 +182,9 @@ public class Polygon extends Shape {
     }
 
     public void close() {
-        System.out.println("Closing polygon. Points: " + points.size());
         if (points.size() >= 2) {
             isClosed = true;
+            System.out.println("Polygon closed! Fill color: " + paintSettings.getFillColor());
         }
     }
 

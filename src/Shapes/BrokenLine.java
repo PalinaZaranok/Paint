@@ -3,6 +3,7 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class BrokenLine extends Shape {
     private List<Point> points;
     private Point tempPoint;
+    @Serial
     private static final long serialVersionUID = 1L;
     public BrokenLine(PaintSettings paintSettings, Point startPoint, List<Point> points){
         super(paintSettings, startPoint);
@@ -41,7 +43,6 @@ public class BrokenLine extends Shape {
             g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
         }
 
-        if(selected) drawHandles(g);
     }
 
     @Override

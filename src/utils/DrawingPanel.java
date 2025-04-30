@@ -51,7 +51,7 @@ public class DrawingPanel extends JPanel {
                     if(e.isControlDown()){
                         if (ctrlPressed){
                             if (currentPolygon == null) {
-                                currentPolygon = new Polygon(new PaintSettings(null, null, 2), e.getPoint(), new ArrayList<>());
+                                currentPolygon = new Polygon(new PaintSettings(canvas.currentSettings), e.getPoint(), new ArrayList<>());
                                 currentPolygon.addVertex(e.getPoint());
                             }
                             repaint();
@@ -70,13 +70,6 @@ public class DrawingPanel extends JPanel {
                             dragStart = e.getPoint();
                             selectedHandle = null;
 
-                            // Проверка на попадание в маркеры
-                            for (Point handle : selectedShape.getHandles()) {
-                                if (isNear(handle, e.getPoint())) {
-                                    selectedHandle = handle;
-                                    break;
-                                }
-                            }
                             repaint();
                             return;
                         }
@@ -147,11 +140,6 @@ public class DrawingPanel extends JPanel {
 
         });
 
-    }
-
-    private boolean isNear(Point a, Point b) {
-        return Math.abs(a.x - b.x) < 5 &&
-                Math.abs(a.y - b.y) < 5;
     }
 
     @Override

@@ -13,6 +13,13 @@ public class PaintSettings {
         this.color = color;
     }
 
+    // Конструктор копирования
+    public PaintSettings(PaintSettings other) {
+        this.color = other.color;
+        this.fillColor = other.fillColor;
+        this.strokeWidth = other.strokeWidth;
+    }
+
     public Color getColor() {
         return color;
     }

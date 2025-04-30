@@ -16,10 +16,12 @@ public class Canvas {
     private final HistoryManager historyManager = new HistoryManager();
     private Tool currentTool;
     public Shape currentShape;
+    public PaintSettings currentSettings;
 
     public void setTool(Tool tool) {
         this.currentTool = tool;
     }
+
 
     public void addShape(Shape shape) {
         shapes.add(shape);
@@ -41,6 +43,10 @@ public class Canvas {
         if (currentShape != null) {
             currentShape.draw(g);
         }
+    }
+
+    public PaintSettings getCurrentPaintSettings() {
+        return currentSettings;
     }
 
     public void handleMousePress(MouseEvent event) {

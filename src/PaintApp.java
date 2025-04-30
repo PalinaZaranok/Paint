@@ -35,6 +35,7 @@ public class PaintApp {
 
         settings = new PaintSettings(Color.BLACK, null, 2);
         canvas = new Canvas();
+        canvas.currentSettings = new PaintSettings(settings);
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -59,18 +60,29 @@ public class PaintApp {
         JButton polygonButton = createToolButton("Polygon", new DrawTool(new Polygon(settings, new Point(100,200), polygonPoints),settings));
 
         JButton colorButton = new JButton("Color");
+        JButton fillColorBtn = new JButton("Fill color");
 
         lineButton.setBackground(Color.orange);
         rectButton.setBackground(Color.orange);
         circleButton.setBackground(Color.orange);
         brokenLineButton.setBackground(Color.orange);
         polygonButton.setBackground(Color.orange);
-        colorButton.setBackground(Color.orange);
+        colorButton.setBackground(Color.pink);
+        fillColorBtn.setBackground(Color.pink);
 
         colorButton.addActionListener(e -> {
-            Color newColor = JColorChooser.showDialog(frame, "Choose Color", settings.getColor());
+            Color newColor = JColorChooser.showDialog(frame, "Choose color", settings.getColor());
             if(newColor != null) {
                 settings.setColor(newColor);
+                canvas.currentSettings.setColor(newColor);
+            }
+        });
+
+        fillColorBtn.addActionListener(e -> {
+            Color color = JColorChooser.showDialog(null, "Choose fill color", settings.getFillColor());
+            if(color != null) {
+                settings.setFillColor(color);
+                canvas.currentSettings.setFillColor(color);
             }
         });
 
@@ -89,7 +101,11 @@ public class PaintApp {
         redoButton.setBackground(Color.orange);
 
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(2, 1, 10, 1));
-        spinner.addChangeListener(e -> settings.setStrokeWidth((Integer)spinner.getValue()));
+        spinner.addChangeListener(e -> {
+            int width = (Integer) spinner.getValue();
+            settings.setStrokeWidth(width);
+            canvas.currentSettings.setStrokeWidth(width);
+        });
         spinner.setBackground(Color.orange);
 
         toolBar.add(menuBar);
@@ -100,6 +116,7 @@ public class PaintApp {
         toolBar.add(polygonButton);
         toolBar.addSeparator();
         toolBar.add(colorButton);
+        toolBar.add(fillColorBtn);
         toolBar.add(undoButton);
         toolBar.add(redoButton);
         toolBar.add(new JLabel("Thickness"));

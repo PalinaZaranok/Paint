@@ -3,12 +3,14 @@ package Shapes;
 import utils.PaintSettings;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
 public class Rectangle extends Shape {
     private int width;
     private int height;
+    @Serial
     private static final long serialVersionUID = 1L;
     public Rectangle(PaintSettings paintSettings, Point position, int width, int height){
         super(paintSettings, position);
@@ -31,7 +33,6 @@ public class Rectangle extends Shape {
         g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
         g.drawRect(x, y, w, h);
 
-        if(selected) drawHandles(g);
     }
     @Override
     public List<Point> getHandles() {
