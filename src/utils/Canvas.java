@@ -1,9 +1,6 @@
 package utils;
 
-import Commands.ColorCommand;
 import Commands.HistoryManager;
-import Commands.ShapeCommand;
-import Shapes.Polygon;
 import Shapes.Shape;
 
 import java.awt.*;
@@ -24,22 +21,32 @@ public class Canvas {
 
 
     public void addShape(Shape shape) {
-        shapes.add(shape);
-        historyManager.executeCommand(new ShapeCommand(this, shape));
+        historyManager.addShape(shape);
     }
 
     public void removeShape(Shape shape){
-        shapes.remove(shape);
+        historyManager.removeShape(shape);
+    }
+    public void clear(){
+        historyManager.clear();
+    }
+    public void undo(){
+        historyManager.undo();
+    }
+    public void redo(){
+        historyManager.redo();
     }
 
-    public void clear(){
-        shapes.clear();
+    public boolean canUndo() {
+        return historyManager.canUndo();
+    }
+
+    public boolean canRedo() {
+        return historyManager.canRedo();
     }
 
     public void paintComponent(Graphics2D g) {
-        for (Shape shape : shapes) {
-            shape.draw(g);
-        }
+        historyManager.drawAll(g);
         if (currentShape != null) {
             currentShape.draw(g);
         }
@@ -64,22 +71,9 @@ public class Canvas {
     public void handleMouseRelease(MouseEvent event) {
         if (currentTool != null && currentShape != null) {
             currentTool.handleMouseRelease(this, event);
-            shapes.add(currentShape);
+            addShape(currentShape);
             currentShape = null;
         }
     }
 
-    public void changeShapeColor(Shape shape, Color newColor) {
-        historyManager.executeCommand(new ColorCommand(shape, newColor));
-    }
-
-    public void undo() {
-        historyManager.undo();
-        //repaint();
-    }
-
-    public void redo() {
-        historyManager.redo();
-       // repaint();
-    }
 }

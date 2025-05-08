@@ -1,30 +1,36 @@
 package Commands;
 
-import java.util.Stack;
+import Shapes.Shape;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class HistoryManager {
-    private final Stack<Command> undoStack = new Stack<>();
-    private final Stack<Command> redoStack = new Stack<>();
+    private List<Shape> currentShapes = new ArrayList<>();
+    private Deque<List<Shape>> undoStack = new ArrayDeque<>();
+    private Deque<List<Shape>> redoStack = new ArrayDeque<>();
 
-    public void executeCommand(Command command){
-        command.execute();
-        undoStack.push(command);
-        redoStack.clear();
-    }
-
-    public void undo() {
-        if (!undoStack.isEmpty()) {
-            Command command = undoStack.pop();
-            command.undo();
-            redoStack.push(command);
-        }
-    }
-
-    public void redo() {
+    public void addShape(Shape shape) {
         if (!redoStack.isEmpty()) {
-            Command command = redoStack.pop();
-            command.execute();
-            undoStack.push(command);
+            redoStack.clear();
+        }
+        undoStack.push(new ArrayList<>(currentShapes));
+        currentShapes.add(shape);
+    }
+
+    public void removeShape(Shape shape) {
+        if (!redoStack.isEmpty()) {
+            redoStack.clear();
+        }
+        undoStack.push(new ArrayList<>(currentShapes));
+        currentShapes.remove(shape);
+    }
+
+    public void clear() {
+        if (!currentShapes.isEmpty()) {
+            undoStack.push(new ArrayList<>(currentShapes));
+            redoStack.clear();
+            currentShapes.clear();
         }
     }
 
@@ -34,5 +40,27 @@ public class HistoryManager {
 
     public boolean canRedo() {
         return !redoStack.isEmpty();
+    }
+
+    public void undo() {
+        if (!canUndo()) return;
+        redoStack.push(new ArrayList<>(currentShapes));
+        currentShapes = undoStack.pop();
+    }
+
+    public void redo() {
+        if (!canRedo()) return;
+        undoStack.push(new ArrayList<>(currentShapes));
+        currentShapes = redoStack.pop();
+    }
+
+    public List<Shape> getShapes() {
+        return new ArrayList<>(currentShapes);
+    }
+
+    public void drawAll(Graphics2D g) {
+        for (Shape shape : currentShapes) {
+            shape.draw(g);
+        }
     }
 }

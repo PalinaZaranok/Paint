@@ -36,7 +36,7 @@ public class DrawingPanel extends JPanel {
                     if (currentPolygon != null && currentPolygon.getVertices().size() >= 2) {
                         // Добавляем соединение начальной и конечной точки
                         currentPolygon.close();
-                        canvas.shapes.add(currentPolygon);
+                        canvas.addShape(currentPolygon);
                         currentPolygon = null;
                         repaint();
                     }
@@ -94,7 +94,7 @@ public class DrawingPanel extends JPanel {
                     if (ctrlPressed && currentPolygon != null) {
                         currentPolygon.addVertex(e.getPoint());
                     } else if (canvas.currentShape != null) {
-                        canvas.shapes.add(canvas.currentShape);
+                        canvas.addShape(canvas.currentShape);
                         canvas.currentShape = null;
                     }
                     repaint();

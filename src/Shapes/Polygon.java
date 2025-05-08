@@ -23,46 +23,6 @@ public class Polygon extends Shape {
         }
     }
 
-    /*
-
-    @Override
-    public void draw(Graphics2D g){
-        int [] xPoints = new int[points.size()];
-        int [] yPoints = new int [points.size()];
-        if (points.isEmpty()) return;
-        //устанавливает цвет контура и толщину линии многоугольника
-        g.setColor(paintSettings.getColor());
-        g.setStroke(new BasicStroke(paintSettings.getStrokeWidth()));
-
-        for (int i = 0; i < points.size() - 1; i++) {
-            Point p1 = points.get(i);
-            Point p2 = points.get(i + 1);
-            g.drawLine(p1.x, p1.y, p2.x, p2.y);
-        }
-
-        if (tempPoint != null && !isClosed) {
-            Point last = points.getLast();
-            g.drawLine(last.x, last.y, tempPoint.x, tempPoint.y);
-        }
-
-        for (int i = 0; i < points.size(); i++) {
-            xPoints[i] = points.get(i).x;
-            yPoints[i] = points.get(i).y;
-        }
-        //отрисовка последней линии
-        if (isClosed) {
-            Point first = points.getFirst();
-            Point last = points.getLast();
-            g.drawLine(first.x, first.y, last.x, last.y);
-            if(paintSettings.getFillColor() != null){
-                g.setColor(paintSettings.getFillColor());
-                g.fillPolygon(xPoints, yPoints, points.size());
-            }
-        }
-
-        //заливка фигуры
-    }
-     */
 
     @Override
     public void draw(Graphics2D g) {
@@ -184,7 +144,6 @@ public class Polygon extends Shape {
     public void close() {
         if (points.size() >= 2) {
             isClosed = true;
-            System.out.println("Polygon closed! Fill color: " + paintSettings.getFillColor());
         }
     }
 

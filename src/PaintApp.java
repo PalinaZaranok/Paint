@@ -23,6 +23,8 @@ public class PaintApp {
     private Canvas canvas;
     private PaintSettings settings;
     private JFrame frame;
+    private JButton undoButton;
+    private JButton redoButton;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new PaintApp().createAndShowGUI());
@@ -86,15 +88,17 @@ public class PaintApp {
             }
         });
 
-        JButton undoButton = new JButton("Undo");
+        undoButton = new JButton("Undo");
         undoButton.addActionListener(e -> {
             canvas.undo();
-           // updateButtonStates();
+            updateUndoRedoButtons();
+            frame.repaint();
         });
-        JButton redoButton = new JButton("Redo");
+        redoButton = new JButton("Redo");
         redoButton.addActionListener(e -> {
             canvas.redo();
-           // updateButtonStates();
+            updateUndoRedoButtons();
+            frame.repaint();
         });
 
         undoButton.setBackground(Color.orange);
@@ -129,13 +133,10 @@ public class PaintApp {
 
     }
 
-    /*
-    private void updateButtonStates() {
+    private void updateUndoRedoButtons() {
         undoButton.setEnabled(canvas.canUndo());
         redoButton.setEnabled(canvas.canRedo());
     }
-
-     */
 
     private JButton createToolButton(String text, Tool tool) {
         JButton button = new JButton(text);
@@ -160,5 +161,7 @@ public class PaintApp {
             frame.repaint();
         }
     }
+
+
 
 }
