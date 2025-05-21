@@ -1,6 +1,6 @@
 package Shapes;
 
-import utils.PaintSettings;
+import Utils.PaintSettings;
 
 import java.awt.*;
 import java.io.Serial;
@@ -10,8 +10,8 @@ import java.util.List;
 
 public class Line extends Shape implements Serializable {
     private Point endPoint;
-    @Serial
-    private static final long serialVersionUID = 1L;
+
+    //private static final long serialVersionUID = 1L;
     private static final int HIT_TOLERANCE = 5;
     public Line(PaintSettings paintSettings, Point position, Point endPoint){
         super(paintSettings, position);

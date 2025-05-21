@@ -1,4 +1,4 @@
-package utils;
+package Utils;
 
 import Commands.HistoryManager;
 import Shapes.Shape;
@@ -21,14 +21,19 @@ public class Canvas {
 
 
     public void addShape(Shape shape) {
+        shapes.add(shape);
         historyManager.addShape(shape);
     }
 
     public void removeShape(Shape shape){
+        if(!shapes.isEmpty()){
+            shapes.remove(shape);
+        }
         historyManager.removeShape(shape);
     }
     public void clear(){
         historyManager.clear();
+        shapes.clear();
     }
     public void undo(){
         historyManager.undo();

@@ -1,6 +1,6 @@
 package Shapes;
 
-import utils.PaintSettings;
+import Utils.PaintSettings;
 
 import java.awt.*;
 import java.io.Serial;
@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Circle extends Shape{
     private int radius;
-    @Serial
-    private static final long serialVersionUID = 1L;
+
+    //private static final long serialVersionUID = 1L;
     private static final int MIN_RADIUS = 5;
     public Circle(PaintSettings paintSettings, Point position, int radius){
         super(paintSettings, position);

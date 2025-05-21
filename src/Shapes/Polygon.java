@@ -1,19 +1,18 @@
 package Shapes;
 
-import utils.PaintSettings;
+import Utils.PaintSettings;
 
 import java.awt.*;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 public class Polygon extends Shape {
     private List<Point> points;
     private Point tempPoint;
     public boolean isClosed = false;
-    @Serial
-    private static final long serialVersionUID = 1L;
+
+    //private static final long serialVersionUID = 1L;
     public Polygon(PaintSettings paintSettings, Point startPoint, List<Point> points){
         super(paintSettings, startPoint);
         this.points = new ArrayList<>();

@@ -1,4 +1,4 @@
-package utils;
+package Utils;
 
 import Shapes.Polygon;
 import Shapes.Rectangle;
@@ -9,13 +9,13 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class DrawTool implements Tool {
     private Shape prototype;
+    private StatePolygon statePolygon;
     private PaintSettings settings;
     private Map<Class<?>, BiConsumer<Shape, Point>> updateActions = new HashMap<>();
     private Map<Class<?>, Function<Point, Shape>> createActions = new HashMap<>();

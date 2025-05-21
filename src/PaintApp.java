@@ -1,25 +1,22 @@
 
-import Commands.HistoryManager;
-import Files.UserFile;
+import Files.ShapeDeserializer;
+import Files.ShapeSerializer;
 import Shapes.Polygon;
 import Shapes.Rectangle;
 import Shapes.*;
 import Shapes.Shape;
-import utils.*;
-import Files.UserFile;
-import utils.Canvas;
+import Utils.*;
+import Utils.Canvas;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaintApp {
+public class PaintApp extends Component {
     private Canvas canvas;
     private PaintSettings settings;
     private JFrame frame;
@@ -43,8 +40,21 @@ public class PaintApp {
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem loadItem = new JMenuItem("Load");
-        saveItem.addActionListener(this::saveFile);
-        loadItem.addActionListener(this::loadFile);
+
+        saveItem.addActionListener(e1 -> {
+            try {
+                saveFile(e1);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        loadItem.addActionListener(e1 -> {
+            try {
+                loadFile(e1);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         fileMenu.add(saveItem);
         fileMenu.add(loadItem);
@@ -69,8 +79,8 @@ public class PaintApp {
         circleButton.setBackground(Color.orange);
         brokenLineButton.setBackground(Color.orange);
         polygonButton.setBackground(Color.orange);
-        colorButton.setBackground(Color.pink);
-        fillColorBtn.setBackground(Color.pink);
+        colorButton.setBackground(Color.orange);
+        fillColorBtn.setBackground(Color.orange);
 
         colorButton.addActionListener(e -> {
             Color newColor = JColorChooser.showDialog(frame, "Choose color", settings.getColor());
@@ -144,21 +154,28 @@ public class PaintApp {
         return button;
     }
 
-    private void saveFile(ActionEvent e) {
+    private void saveFile(ActionEvent e) throws IOException {
         JFileChooser fileChooser = new JFileChooser();
-        if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            UserFile userFile = new UserFile();
-            userFile.saveToFile(fileChooser.getSelectedFile().getPath(), canvas.shapes);
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION){
+            File fileName = fileChooser.getSelectedFile();
+            ShapeSerializer.save(canvas.shapes, fileName);
+            JOptionPane.showMessageDialog(frame, "Сохранено в "+fileName);
         }
     }
 
-    private void loadFile(ActionEvent e) {
+    private void loadFile(ActionEvent e) throws IOException {
         JFileChooser fileChooser = new JFileChooser();
-        if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+        int result = fileChooser.showOpenDialog(this);
+        if(result == JFileChooser.APPROVE_OPTION){
+            File fileName = fileChooser.getSelectedFile();
+            List<Shape> loadedShapes = ShapeDeserializer.load(fileName);
             canvas.clear();
-            UserFile userFile = new UserFile();
-            canvas.shapes = userFile.loadFromFile(fileChooser.getSelectedFile().getPath());
+            for(Shape shape : loadedShapes){
+                canvas.addShape(shape);
+            }
             frame.repaint();
+            JOptionPane.showMessageDialog(frame, "Загружено из "+fileName);
         }
     }
 

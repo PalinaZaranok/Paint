@@ -1,17 +1,17 @@
 package Shapes;
 
-import utils.PaintSettings;
+import Utils.PaintSettings;
 import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Shape implements Serializable {
+public abstract class Shape {
+    //
     protected PaintSettings paintSettings;
     protected Point position;
-    @Serial
-    private static final long serialVersionUID = 1L;
+
+   // private static final long serialVersionUID = 1L;
     protected boolean selected;
     protected static final int HANDLE_SIZE = 8;
 

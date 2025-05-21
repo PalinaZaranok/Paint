@@ -1,6 +1,6 @@
 package Shapes;
 
-import utils.PaintSettings;
+import Utils.PaintSettings;
 
 import java.awt.*;
 import java.io.Serial;
