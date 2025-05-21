@@ -13,8 +13,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class PaintApp extends Component {
     private Canvas canvas;
@@ -122,6 +127,10 @@ public class PaintApp extends Component {
         });
         spinner.setBackground(Color.orange);
 
+        JButton pluginButton = new JButton("Load Plugin");
+        pluginButton.addActionListener(e->loadPlugin());
+        pluginButton.setBackground(Color.cyan);
+
         toolBar.add(menuBar);
         toolBar.add(lineButton);
         toolBar.add(rectButton);
@@ -133,6 +142,7 @@ public class PaintApp extends Component {
         toolBar.add(fillColorBtn);
         toolBar.add(undoButton);
         toolBar.add(redoButton);
+        toolBar.add(pluginButton);
         toolBar.add(new JLabel("Thickness"));
         toolBar.add(spinner);
 
@@ -179,6 +189,57 @@ public class PaintApp extends Component {
         }
     }
 
+    private void loadPlugin(){
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File jarFile = fileChooser.getSelectedFile();
+            try {
+                List<Shape> loadedShapes = loadShapesFromJar(jarFile);
+                canvas.shapes.addAll(loadedShapes);
+                for(Shape shape : loadedShapes){
+                    canvas.addShape(shape);
+                }
+                frame.repaint();
+                JOptionPane.showMessageDialog(this,
+                        "Загружено фигур: " + loadedShapes.size());
+                repaint();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                        "Ошибка загрузки плагина", "Ошибка",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
+    private List<Shape> loadShapesFromJar(File jarFile) throws Exception {
+        List<Shape> shapes = new ArrayList<>();
+        JarFile jar = new JarFile(jarFile);
+        Enumeration<JarEntry> entries = jar.entries();
+
+        URLClassLoader cl = URLClassLoader.newInstance(
+                new URL[] { jarFile.toURI().toURL() },
+                getClass().getClassLoader()
+        );
+
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
+
+            String className = entry.getName()
+                    .replace("/", ".")
+                    .replace(".class", "");
+
+            try {
+                Class<?> cls = cl.loadClass(className);
+                if (Shape.class.isAssignableFrom(cls)) {
+                    Shape shape = (Shape) cls.getDeclaredConstructor().newInstance();
+                    shapes.add(shape);
+                }
+            } catch (Exception ignored) {}
+        }
+        jar.close();
+        return shapes;
+    }
 
 }

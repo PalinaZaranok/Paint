@@ -3,15 +3,13 @@ package Shapes;
 import Utils.PaintSettings;
 
 import java.awt.*;
-import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
 public class Rectangle extends Shape {
     private int width;
     private int height;
-    @Serial
-    private static final long serialVersionUID = 1L;
+
     public Rectangle(PaintSettings paintSettings, Point position, int width, int height){
         super(paintSettings, position);
         this.height = height;

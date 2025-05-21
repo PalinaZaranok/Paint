@@ -3,7 +3,6 @@ package Shapes;
 import Utils.PaintSettings;
 
 import java.awt.*;
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
